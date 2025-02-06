@@ -179,8 +179,10 @@ public class CoordinatorViewModule {
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastClickTime > clickTime) {
                 lastClickTime = currentTime;
-                isSupportMoving = false;
-                setViewClockWithAnimation();
+                if (lastverticalOffset == 0) {
+                    isSupportMoving = false;
+                    setViewClockWithAnimation();
+                }
             }
         });
 
@@ -323,14 +325,12 @@ public class CoordinatorViewModule {
         if (flag) {
             fadeOutView = viewInCollapsingToolbarLayout;
             fadeInView = viewInToolBar;
-            animateView(fadeOutView, 1.0f, 1.0f, click_end_position, click_end_position, 1, 0, clickTime);
-            animateView(fadeInView, click_end_position, click_end_position, 1, 1, 0, 1, clickTime);
         } else {
             fadeOutView = viewInToolBar;
             fadeInView = viewInCollapsingToolbarLayout;
-            animateView(fadeOutView, 1.0f, 1f, click_end_position, click_end_position, 1, 0, clickTime);
-            animateView(fadeInView, click_end_position, click_end_position, 1, 1, 0, 1, clickTime);
         }
+        animateView(fadeOutView, 1.0f, 1.0f, click_end_position, click_end_position, 1, 0, clickTime);
+        animateView(fadeInView, click_end_position, click_end_position, 1, 1, 0, 1, clickTime);
         flag = !flag;
     }
 
@@ -364,4 +364,33 @@ public class CoordinatorViewModule {
         viewInToolBar.setScaleY(1 - viewInToolBarScaleY);
         viewInToolBar.setAlpha(1);
     }
+
+    @SuppressLint("ClickableViewAccessibility")
+    public void cleanup() {
+        if (nestedScrollView != null) {
+            nestedScrollView.setOnTouchListener(null);
+            nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) null);
+        }
+
+        if (appBarLayout != null) {
+            appBarLayout.removeOnOffsetChangedListener(null);
+        }
+
+        if (context != null) {
+            context = null;
+        }
+
+        if (viewInCollapsingToolbarLayout != null) {
+            viewInCollapsingToolbarLayout = null;
+        }
+
+        if (viewInToolBar != null) {
+            viewInToolBar = null;
+        }
+
+        if (nestedScrollView != null) {
+            nestedScrollView = null;
+        }
+    }
+
 }
